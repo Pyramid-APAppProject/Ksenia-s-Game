@@ -143,22 +143,49 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
         if bodyOne.categoryBitMask == PhysicsCategories.Player && bodyTwo.categoryBitMask == PhysicsCategories.Enemy{
             //if the player has hit the enemy
+            if bodyOne.node != nil {
+            spawnExplosion(spawnPosition: bodyOne.node!.position)
+            }
+            
+            if bodyTwo.node != nil {
+            spawnExplosion(spawnPosition: bodyTwo.node!.position)
+            }
             bodyOne.node?.removeFromParent()
             bodyTwo.node?.removeFromParent()
             
         }
         
-        if bodyOne.categoryBitMask == PhysicsCategories.Bullet && bodyTwo.categoryBitMask == PhysicsCategories.Enemy{
-            //if the bullet has hit the enemy
-            bodyOne.node?.removeFromParent()
-            bodyTwo.node?.removeFromParent()
-            
-        }
-        
-   
-    
-    
+         if bodyOne.categoryBitMask == PhysicsCategories.Bullet && bodyTwo.categoryBitMask == PhysicsCategories.Enemy
+         {
+                 //if the bullet has hit the enemy
+           if bodyTwo.node != nil {
+            spawnExplosion(spawnPosition: bodyTwo.node!.position)
+              }
+         
+                 bodyOne.node?.removeFromParent()
+                 bodyTwo.node?.removeFromParent()
+                 
     }
+    }
+    
+    func spawnExplosion(spawnPosition: CGPoint){
+    
+        let explosion = SKSpriteNode(imageNamed: "explosition")
+        explosion.position = spawnPosition
+        explosion.zPosition = 3
+        explosion.setScale(0)
+        
+        self.addChild(explosion)
+        let scaleIn = SKAction.scale(to: 1, duration: 0.1)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.1)
+        let delete = SKAction.removeFromParent()
+        let explosionSequence = SKAction.sequence([scaleIn, fadeOut, delete])
+        explosion.run(explosionSequence)
+    }
+    
+    
+    
+    
             override func touchesBegan (_ touches: Set<UITouch>, with event: UIEvent?)
             {
                 fireBullet()
@@ -202,3 +229,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+       
+            
+        
+         
+
