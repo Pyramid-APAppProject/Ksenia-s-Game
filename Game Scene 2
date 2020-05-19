@@ -18,7 +18,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         static let Bullet : UInt32 = 0b10 //2
         static let Enemy : UInt32 = 0b100 //4
     }
-    
+
   
 
     func random() -> CGFloat {
@@ -158,14 +158,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
    
     
     
-    override func touchesBegan (_ touches: Set<UITouch>, with event: UIEvent?)
-           {
-               fireBullet()
-            spawnEnemy()
-            
     }
-     
+            override func touchesBegan (_ touches: Set<UITouch>, with event: UIEvent?)
+            {
+                fireBullet()
+                spawnEnemy()}
     
+     
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+       for touch: AnyObject in touches{
+    let pointOfTouch = touch.location(in: self)
+    let previousPointOfTouch = touch.previousLocation(in: self)
+    let amountDragged = pointOfTouch.x - previousPointOfTouch.x
+    player.position.x += amountDragged
+    
+    if player.position.x > gameArea.maxX - player.size.width/2{
+        player.position.x = gameArea.maxX - player.size.width/2
+    }
+    if player.position.x < gameArea.minX + player.size.width/2{
+        player.position.x = gameArea.minX + player.size.width/2
+        
+         }}}
     
     func fireBullet() {
       let bullet = SKSpriteNode(imageNamed: "bullet")
@@ -183,27 +196,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let bulletSequence = SKAction.sequence([bulletSound, moveBullet, deleteBullet])
         bullet.run(bulletSequence)
         
-        }
+            }
     
       
     }
     
     
-        override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-               for touch: AnyObject in touches{
-            let pointOfTouch = touch.location(in: self)
-            let previousPointOfTouch = touch.previousLocation(in: self)
-            let amountDragged = pointOfTouch.x - previousPointOfTouch.x
-            player.position.x += amountDragged
-            
-            if player.position.x > gameArea.maxX - player.size.width/2{
-                player.position.x = gameArea.maxX - player.size.width/2
-            }
-            if player.position.x < gameArea.minX + player.size.width/2{
-                player.position.x = gameArea.minX + player.size.width/2
-                
-            }
-            
-        }
-    }}
-
