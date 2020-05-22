@@ -8,6 +8,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let player = SKSpriteNode(imageNamed: "perry")
     
+    let tapToStartLabel = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
     
     struct PhysicsCategories{
         static let None : UInt32 = 0
@@ -65,7 +66,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
            
            self.addChild(enemy)
            
-           let moveEnemy = SKAction.move(to: endPoint, duration: 8)
+           let moveEnemy = SKAction.move(to: endPoint, duration: 5)
            let deleteEnemy = SKAction.removeFromParent()
            let enemySequence = SKAction.sequence([moveEnemy, deleteEnemy])
            if currentGameState == gameState.inGame{
@@ -112,7 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(background)
        
         player.setScale(0.2)
-        player.position = CGPoint(x: self.size.width/2, y: self.size.height/5)
+        player.position = CGPoint(x: self.size.width/2, y: 0 - player.size.height/5)
         player.zPosition = 2
         player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
         player.physicsBody!.affectedByGravity = false
@@ -120,7 +121,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.physicsBody!.collisionBitMask = PhysicsCategories.None
         player.physicsBody!.contactTestBitMask = PhysicsCategories.Enemy
         self.addChild(player)
-        startNewLevel()
+        tapToStartLabel.text = "Tap To Begin"
+        tapToStartLabel.fontSize = 100
+        tapToStartLabel.fontColor = SKColor.white
+        tapToStartLabel.zPosition = 1
+        tapToStartLabel.position = CGPoint(x: self.size.width*0.5, y: self.size.height*0.47)
+        self.addChild(tapToStartLabel)
+        
     }
     
     
@@ -186,11 +193,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     
-    override func touchesBegan (_ touches: Set<UITouch>, with event: UIEvent?)
-            {
-                if currentGameState == gameState.inGame{
-                fireBullet()
-                spawnEnemy()}
+    override func touchesBegan (_ touches: Set<UITouch>, with event: UIEvent?){
+        if currentGameState == gameState.preGame{
+            startGame()
+        }
+        
+        else if currentGameState == gameState.inGame{
+            fireBullet()
+                    
+                }
                 
     }
     
@@ -255,7 +266,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case afterGame //after the game ends
     
     }
-    var currentGameState = gameState.inGame
+    var currentGameState = gameState.preGame
     func changeScene (){
         
         let sceneToMoveTo = GameOverScene(size: self.size)
@@ -265,11 +276,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.view!.presentScene(sceneToMoveTo, transition: myTransition)
         
     }
-    
+    func startGame(){
+        
+        currentGameState = gameState.inGame
+        let fadeOutAction = SKAction.fadeOut(withDuration: 0.5)
+        let deleteAction = SKAction.removeFromParent()
+        let deleteSequence = SKAction.sequence([fadeOutAction, deleteAction])
+        tapToStartLabel.run(deleteAction)
+        
+        let movePerryOntoScreen = SKAction.moveTo(y: self.size.height*0.2, duration: 0.5)
+        let startLevelAction = SKAction.run(startNewLevel)
+        let startGameSequence = SKAction.sequence([movePerryOntoScreen, startLevelAction])
+        player.run(startGameSequence)
+        
+        
+        
+        
+    }
 }
     
     
        
             
-        
-         
